@@ -13,10 +13,11 @@ public class Init {
     public final YamlFile config = new YamlFile("config.yml");
 
     public void Initialize() throws InterruptedException {
+        initConfig();
+        System.out.println("Starting.");
         db.initializeDatabase();
         bot.StartBot("MTQyMTcxODQ0OTMzOTYyOTY2MA.GMgVnm.aS7bMh-tDUR-rwzeQFJdtWQST0RTDJgNUTyy_k");
-
-        initConfig();
+        if (config.getBoolean("Growtopia.Support")) System.out.println("Growtopia Support Enabled");
     }
 
     public void initConfig() {
@@ -36,7 +37,7 @@ public class Init {
             config.addDefault("Discord.Donate-Log", "");
 
             // Growtopia Support Related Files.
-            config.addDefault("Growtopia.Suppport", true);
+            config.addDefault("Growtopia.Support", true);
             config.addDefault("Growtopia.Currency.Rate", 1700);
             config.addDefault("Growtopia.Currency.Convert", true);
 

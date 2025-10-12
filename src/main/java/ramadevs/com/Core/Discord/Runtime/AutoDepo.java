@@ -34,6 +34,7 @@ public class AutoDepo {
     }
 
     private void processMessage(Message message) {
+        System.out.println(message.getContentRaw());
         String[] args = message.getContentRaw().split("\\|");
         if (args.length < 2) {
             if (message.getContentRaw().equals("Offline")) {
