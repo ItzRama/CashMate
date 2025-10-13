@@ -122,10 +122,10 @@ public class MongoDB {
         try {
             if (isGrowIDExist(GrowID)) {
                 DataSchematic schem = getUserByGrowID(GrowID);
-                if (init.config.getBoolean("Growtopia.Currency.Convert")) {
+                if (init.getConfig.config.getBoolean("Growtopia.Currency.Convert")) {
                     amount /= 100;
                     int money = schem.money;
-                    this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Money", money + (amount * init.config.getInt("Growtopia.Currency.Rate")))));
+                    this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Money", money + (amount * init.getConfig.config.getInt("Growtopia.Currency.Rate")))));
                 } else {
                     int balance = schem.balance;
                     this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Balance", balance + amount)));

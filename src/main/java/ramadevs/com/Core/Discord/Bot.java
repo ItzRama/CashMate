@@ -51,9 +51,9 @@ public class Bot {
                 );
         commands.queue();
 
-        System.out.println("Growtopia.Support: " + init.config.getBoolean("Growtopia.Support"));
+        System.out.println("Growtopia.Support: " + init.getConfig.config.getBoolean("Growtopia.Support"));
 
-        if (init.config.getBoolean("Growtopia.Support")) {
+        if (init.getConfig.config.getBoolean("Growtopia.Support")) {
             System.out.println("Enabling Donation Thread...");
             scheduler1.scheduleAtFixedRate(autoDepo.autoBal(), 1, 5, TimeUnit.SECONDS);
         }

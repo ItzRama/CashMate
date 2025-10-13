@@ -2,6 +2,7 @@ package ramadevs.com.Core.Discord.Embed;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import ramadevs.com.Core.Database.Schematic.DataSchematic;
 import ramadevs.com.Core.Database.Schematic.StatsSchematic;
 import ramadevs.com.Core.Discord.Bot;
@@ -28,7 +29,7 @@ public class TransactionEmbed {
 
         StringBuilder text = new StringBuilder();
 
-        if (!bot.init.config.getBoolean("Growtopia.Currency.Convert")) {
+        if (!bot.init.getConfig.config.getBoolean("Growtopia.Currency.Convert")) {
             int balance = schem.balance;
 
             int bgl = balance / 10000;
@@ -54,7 +55,7 @@ public class TransactionEmbed {
             int wl = (amount % 100);
             if (wl > 0) text.append("🔒 **").append(wl).append("** World Lock");
 
-            int rate = bot.init.config.getInt("Growtopia.Currency.Rate");
+            int rate = bot.init.getConfig.config.getInt("Growtopia.Currency.Rate");
             float finalMoney = (amount / 100f) * rate;
 
             embed.addField("👤 GrowID", "`" + schem.GrowID + "`", true);
@@ -135,6 +136,70 @@ public class TransactionEmbed {
                     .addField("🌍 Deposit World", "Unavailable", true)
                     .addField("👑 World Owner", "Unavailable", true)
                     .setFooter("💡 Try again later when the bot is online.");
+        }
+
+        return embed.build();
+    }
+
+    public static MessageEmbed donateLog(DataSchematic schem, int amount, String mode) {
+        EmbedBuilder embed = new EmbedBuilder()
+                .setColor(new Color(0xF1C40F)) // Gold untuk log
+                .setTitle("📜 Donation Log")
+                .setTimestamp(Instant.now());
+
+        int rate = bot.init.getConfig.config.getInt("Growtopia.Currency.Rate");
+        boolean gtEnabled = bot.init.getConfig.config.getBoolean("Growtopia.Support");
+        boolean autoConv = bot.init.getConfig.config.getBoolean("Growtopia.Currency.Convert");
+
+        User user = bot.jda.getUserById(schem.id);
+
+        embed.setDescription("🎁 A donation has been received!");
+        embed.addField("🙍 User", user != null ? user.getAsMention() : "`Unknown`", true);
+        embed.addField("🆔 User ID", "`" + schem.id + "`", true);
+
+        if (mode.equalsIgnoreCase("growtopia")) {
+            // Format locks
+            StringBuilder text = new StringBuilder();
+            int bgl = amount / 10000;
+            if (bgl > 0) text.append("🔷 **").append(bgl).append("** Blue Gem Lock\n");
+
+            int dl = (amount % 10000) / 100;
+            if (dl > 0) text.append("💠 **").append(dl).append("** Diamond Lock\n");
+
+            int wl = (amount % 100);
+            if (wl > 0) text.append("🔒 **").append(wl).append("** World Lock");
+
+            float finalMoney = (amount / 100f) * rate;
+
+            embed.addField("💰 Donated (Locks)", text.toString(), false);
+
+            if (autoConv) {
+                embed.addField("⚙️ Auto Convert", "Enabled ✅", true);
+                embed.addField("💱 Rate", "`" + rate + "` per Diamond Lock", true);
+                embed.addField("💵 Final Convert", "Rp. **" + finalMoney + "**", false);
+            }
+
+        } else if (mode.equalsIgnoreCase("realmoney")) {
+            embed.addField("💵 Money Donated", "Rp. **" + amount + "**", false);
+
+            if (gtEnabled) {
+                // Hitung konversi ke locks
+                float bal = (float) amount / rate;   // force float division
+                int locks = Math.round(bal * 100);   // convert to WLs
+
+                StringBuilder text = new StringBuilder();
+
+                int bgl = locks / 10000;
+                if (bgl > 0) text.append("🔷 **").append(bgl).append("** Blue Gem Lock\n");
+
+                int dl = (locks % 10000) / 100;
+                if (dl > 0) text.append("💠 **").append(dl).append("** Diamond Lock\n");
+
+                int wl = (locks % 100);
+                if (wl > 0) text.append("🔒 **").append(wl).append("** World Lock");
+
+                embed.addField("💎 Equals As", text.toString(), false);
+            }
         }
 
         return embed.build();

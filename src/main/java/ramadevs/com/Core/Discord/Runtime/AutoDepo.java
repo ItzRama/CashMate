@@ -2,14 +2,14 @@ package ramadevs.com.Core.Discord.Runtime;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import ramadevs.com.Core.Database.Schematic.DataSchematic;
 import ramadevs.com.Core.Discord.Bot;
 
 import java.util.List;
 
-import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.addBalanceEmbed;
-import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.addMoneyEmbed;
+import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.*;
 
 public class AutoDepo {
     private final Bot bot;
@@ -77,9 +77,16 @@ public class AutoDepo {
                                 }
 
                                 if (schem != null) {
+                                    // Send to DM
                                     bot.jda.openPrivateChannelById(schem.id)
                                             .queue(ch -> ch.sendMessageEmbeds(addMoneyEmbed(schem, amount)).queue());
                                     deleteMessage(message);
+
+                                    // Send to Donate Log Channel
+                                    TextChannel donate_log_channel = bot.jda.getTextChannelById(bot.init.getConfig.config.getString("Discord.Donate-Log"));
+                                    if (donate_log_channel != null) {
+                                        donate_log_channel.sendMessageEmbeds(donateLog(schem, amount, "realmoney")).queue();
+                                    }
                                 }
                             }
                         }
@@ -119,6 +126,10 @@ public class AutoDepo {
             if (schem != null) {
                 bot.jda.openPrivateChannelById(schem.id)
                         .queue(ch -> ch.sendMessageEmbeds(addBalanceEmbed(schem, amount)).queue());
+                TextChannel donate_log_channel = bot.jda.getTextChannelById("1421784471736422441");
+                if (donate_log_channel != null) {
+                    donate_log_channel.sendMessageEmbeds(donateLog(schem, amount, "growtopia")).queue();
+                }
             }
             deleteMessage(message);
         }
