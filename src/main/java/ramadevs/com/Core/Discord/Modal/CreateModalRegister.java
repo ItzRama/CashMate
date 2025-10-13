@@ -9,9 +9,15 @@ public class CreateModalRegister {
         try {
             Modal m = Modal.create("register_menu", "Registration Menu")
                     .addActionRow(
-                            TextInput.create("growid", "GrowID (GROWTOPIA IGN)", TextInputStyle.SHORT)
+                            TextInput.create("uid", "User ID (Don't use whitespace.)", TextInputStyle.SHORT)
                                     .setMaxLength(32)
                                     .setRequired(true)
+                                    .build()
+                    )
+                    .addActionRow(
+                            TextInput.create("growid", "GrowID (Optional)", TextInputStyle.SHORT)
+                                    .setMaxLength(32)
+                                    .setRequired(false)
                                     .build()
                     )
                     .build();

@@ -8,6 +8,8 @@ import ramadevs.com.Core.Database.Schematic.DataSchematic;
 import ramadevs.com.Core.Database.Schematic.StatsSchematic;
 import ramadevs.com.Core.Discord.Bot;
 
+import java.util.Arrays;
+
 import static ramadevs.com.Core.Discord.Embed.EmbedRegister.*;
 import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.checkBalance;
 import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.depositBalance;
@@ -48,8 +50,25 @@ public class DiscordListener extends ListenerAdapter {
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         switch(event.getModalId().toLowerCase()) {
             case "register_menu" -> {
+                String UID = event.getValue("uid").getAsString();
                 String GrowID = event.getValue("growid").getAsString();
-                boolean state = bot.init.db.createUser(event.getUser(), GrowID);
+
+                if (Arrays.stream(UID.split(" ")).toArray().length > 1) {
+                    event.replyEmbeds(WhitespaceDetect(event.getUser())).setEphemeral(true).queue();
+                    return;
+                }
+
+                if (bot.init.db.isUIDExist(UID)) {
+                    event.replyEmbeds(UIDExistEmbed(event.getUser())).setEphemeral(true).queue();
+                    return;
+                }
+
+                if (bot.init.db.isGrowIDExist(GrowID)) {
+                    event.replyEmbeds(GrowIDExistEmbed(event.getUser())).setEphemeral(true).queue();
+                    return;
+                }
+
+                boolean state = bot.init.db.createUser(event.getUser(),UID ,GrowID);
                 if (state) {
                     event.replyEmbeds(accountCreatedEmbed(event.getUser())).setEphemeral(true).queue();
                 } else {

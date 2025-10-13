@@ -57,10 +57,14 @@ public class MongoDB {
         return Data.find(new Document("GrowID", GrowID)).first() != null;
     }
 
-    public boolean createUser(User user, String GrowID) {
+    public boolean isUIDExist(String UID) {
+        return Data.find(new Document("UID", UID)).first() != null;
+    }
+
+    public boolean createUser(User user, String UID ,String GrowID) {
         try {
             if (!isExist(user)) {
-                Document data = new Document("ID", user.getId()).append("GrowID", GrowID).append("Balance", 0).append("Money", 0);
+                Document data = new Document("ID", user.getId()).append("UID", UID).append("GrowID", GrowID).append("Balance", 0).append("Money", 0);
                 Data.insertOne(data);
                 return true;
             } else {
@@ -75,7 +79,7 @@ public class MongoDB {
     public DataSchematic getUserByUser(User user) {
         if (isExist(user)) {
             Document data = Data.find(new Document("ID", user.getId())).first();
-            return new DataSchematic(data.getString("ID"), data.getString("GrowID"), data.getInteger("Balance"), data.getInteger("Money"));
+            return new DataSchematic(data.getString("ID"), data.getString("UID"),data.getString("GrowID"), data.getInteger("Balance"), data.getInteger("Money"));
         }
         return null;
     }
@@ -96,7 +100,14 @@ public class MongoDB {
     public DataSchematic getUserByGrowID(String GrowID) {
         if (isGrowIDExist(GrowID)) {
             Document data = Data.find(new Document("GrowID", GrowID)).first();
-            return new DataSchematic(data.getString("ID"), data.getString("GrowID"), data.getInteger("Balance"), data.getInteger("Money"));
+            return new DataSchematic(data.getString("ID"),data.getString("UID") ,data.getString("GrowID"), data.getInteger("Balance"), data.getInteger("Money"));
+        }
+        return null;
+    }
+    public DataSchematic getUserByUID(String UID) {
+        if (isUIDExist(UID)) {
+            Document data = Data.find(new Document("UID", UID)).first();
+            return new DataSchematic(data.getString("ID"),data.getString("UID") ,data.getString("GrowID"), data.getInteger("Balance"), data.getInteger("Money"));
         }
         return null;
     }
@@ -112,6 +123,7 @@ public class MongoDB {
             if (isGrowIDExist(GrowID)) {
                 DataSchematic schem = getUserByGrowID(GrowID);
                 if (init.config.getBoolean("Growtopia.Currency.Convert")) {
+                    amount /= 100;
                     int money = schem.money;
                     this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Money", money + (amount * init.config.getInt("Growtopia.Currency.Rate")))));
                 } else {
@@ -127,6 +139,19 @@ public class MongoDB {
         return false;
     }
 
+    public boolean addMoney(String identity, int amount) {
+        if (isGrowIDExist(identity) || isUIDExist(identity)) {
+            DataSchematic schem = null;
+            if (isGrowIDExist(identity)) schem = getUserByGrowID(identity);
+            else if (isUIDExist(identity)) schem = getUserByUID(identity);
 
+            int curMoney = schem.money;
+
+            this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Money", curMoney + amount)));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

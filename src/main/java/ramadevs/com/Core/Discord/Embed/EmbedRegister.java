@@ -52,6 +52,48 @@ public class EmbedRegister {
         return embed.build();
     }
 
+    public static MessageEmbed UIDExistEmbed(User user) {
+        EmbedBuilder embed = new EmbedBuilder();
+        DataSchematic schem = bot.init.db.getUserByUser(user);
+
+        embed.setTitle("❌ Such UID Exist!");
+        embed.setDescription("If you began to confuse, do /help.");
+        embed.setColor(Color.RED); // Discord RED
+        embed.setThumbnail(user.getEffectiveAvatarUrl());
+        embed.setFooter("Start your adventure with /help");
+        embed.setTimestamp(Instant.now());
+
+        return embed.build();
+    }
+
+    public static MessageEmbed GrowIDExistEmbed(User user) {
+        EmbedBuilder embed = new EmbedBuilder();
+        DataSchematic schem = bot.init.db.getUserByUser(user);
+
+        embed.setTitle("❌ Such GrowID Connected to Other Account!");
+        embed.setDescription("If you began to confuse, do /help.");
+        embed.setColor(Color.RED); // Discord RED
+        embed.setThumbnail(user.getEffectiveAvatarUrl());
+        embed.setFooter("Start your adventure with /help");
+        embed.setTimestamp(Instant.now());
+
+        return embed.build();
+    }
+
+    public static MessageEmbed WhitespaceDetect(User user) {
+        EmbedBuilder embed = new EmbedBuilder();
+        DataSchematic schem = bot.init.db.getUserByUser(user);
+
+        embed.setTitle("❌ Dont include whitespace in UID!");
+        embed.setDescription("If you began to confuse, do /help.");
+        embed.setColor(Color.RED); // Discord RED
+        embed.setThumbnail(user.getEffectiveAvatarUrl());
+        embed.setFooter("Start your adventure with /help");
+        embed.setTimestamp(Instant.now());
+
+        return embed.build();
+    }
+
     public static MessageEmbed notRegistered(User user) {
         EmbedBuilder embed = new EmbedBuilder();
         DataSchematic schem = bot.init.db.getUserByUser(user);
