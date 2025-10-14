@@ -1,14 +1,21 @@
 package ramadevs.com.Core.Discord.Listener;
 
+import com.mongodb.MongoException;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import ramadevs.com.Core.Database.Schematic.DataSchematic;
 import ramadevs.com.Core.Database.Schematic.StatsSchematic;
 import ramadevs.com.Core.Discord.Bot;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static ramadevs.com.Core.Discord.Embed.EmbedRegister.*;
 import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.*;
@@ -45,6 +52,67 @@ public class DiscordListener extends ListenerAdapter {
             }
             case "additem" -> {
                 event.replyModal(createItem()).queue();
+            }
+            case "addstock" -> {
+                String id = event.getOption("id").getAsString();
+
+                if (!bot.init.db.ItemExist(id)) {
+                    event.reply("❌ Item dengan ID `" + id + "` tidak ditemukan.").setEphemeral(true).queue();
+                    return;
+                }
+
+                OptionMapping file = event.getOption("file");
+                OptionMapping stock = event.getOption("stock");
+
+                if (file != null) {
+                    Message.Attachment attachment = file.getAsAttachment();
+
+                    if (!attachment.getFileName().endsWith(".txt")) {
+                        event.reply("❌ File harus berupa `.txt`.").setEphemeral(true).queue();
+                        return;
+                    }
+
+                    event.deferReply().setEphemeral(true).queue(); // optional, if processing takes time
+
+                    attachment.getProxy().download().thenAccept(inputStream -> {
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                            List<String> stockList = new ArrayList<>();
+                            String line;
+
+                            while ((line = reader.readLine()) != null) {
+                                if (!line.trim().isEmpty()) {
+                                    stockList.add(line.trim());
+                                }
+                            }
+
+                            // Simpan ke database atau lakukan sesuatu dengan stockList
+                            bot.init.db.addStockFromFile(id, (ArrayList<String>) stockList);
+
+
+                            event.getHook().sendMessage("✅ Stock berhasil ditambahkan ke item `" + id + "`.\nJumlah: **" + stockList.size() + "**").queue();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            event.getHook().sendMessage("❌ Gagal membaca file.").queue();
+                        }
+                    });
+                    return;
+                }
+
+                if (stock != null) {
+                    try {
+                        String stocks = stock.getAsString();
+                        event.deferReply().setEphemeral(true).queue();
+                        if (bot.init.db.addStockOne(id, stocks)) {
+                            event.getHook().sendMessage("✅ Stock berhasil ditambahkan ke item `" + id + "`.\nJumlah: **1**").queue();
+                        } else {
+                            event.getHook().sendMessage("❌ Gagal menambahkan stock ke item `" + id + "`.").queue();
+                        }
+                    } catch (MongoException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         }
     }

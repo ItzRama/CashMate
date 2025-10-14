@@ -51,7 +51,11 @@ public class Bot {
 
                 // Admin Only
                 Commands.slash("setworld", "🔧 Set deposit world"),
-                Commands.slash("additem", "➕ Add stock to the database.")
+                Commands.slash("additem", "➕ Add item to the database."),
+                Commands.slash("addstock", "➕ Add stock to the database.")
+                        .addOption(OptionType.STRING, "id", "specific ID to stock", true)
+                        .addOption(OptionType.ATTACHMENT, "file", "Add a file to the stock", false)
+                        .addOption(OptionType.STRING, "stock", "If you only wanted to stock one item", false)
                 );
         commands.queue();
 

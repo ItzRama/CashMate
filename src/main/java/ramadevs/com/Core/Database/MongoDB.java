@@ -183,4 +183,37 @@ public class MongoDB {
         }
     }
 
+    public boolean addStockFromFile(String id, ArrayList<String> stock) {
+        if (ItemExist(id)) {
+            try {
+                ItemSchematic schem = getItem(id);
+                stock.addAll(schem.Stock);
+
+                this.init.db.Stock.updateOne(new Document("ID", id), new Document("$set", new Document("Stock", stock)));
+                return true;
+            } catch (MongoException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean addStockOne(String id, String stock) {
+        if (ItemExist(id)) {
+            try {
+                ItemSchematic schem = getItem(id);
+                ArrayList<String> stockList = schem.Stock;
+                stockList.add(stock);
+
+                this.init.db.Stock.updateOne(new Document("ID", id), new Document("$set", new Document("Stock", stockList)));
+                return true;
+            } catch (MongoException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
 }
