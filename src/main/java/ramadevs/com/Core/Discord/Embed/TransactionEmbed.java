@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import ramadevs.com.Core.Database.Schematic.DataSchematic;
+import ramadevs.com.Core.Database.Schematic.ItemSchematic;
 import ramadevs.com.Core.Database.Schematic.StatsSchematic;
 import ramadevs.com.Core.Discord.Bot;
 
@@ -201,6 +202,36 @@ public class TransactionEmbed {
                 embed.addField("💎 Equals As", text.toString(), false);
             }
         }
+
+        return embed.build();
+    }
+
+    public static MessageEmbed itemCreated(ItemSchematic item) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("✅ Item Created!");
+        embed.setDescription("You can now add a stock to specific item.");
+        embed.setColor(new Color(0x57F287)); // Discord Green
+
+        embed.addField("ID", item.ID, true);
+        embed.addField("Display Name", item.Display_Name, true);
+        embed.addField("Type", item.Type, true);
+        embed.addField("Price", String.valueOf(item.Price), true);
+
+        embed.setImage(item.Image);
+
+        embed.setFooter("Start your adventure with /help");
+        embed.setTimestamp(Instant.now());
+
+        return embed.build();
+    }
+    public static MessageEmbed itemCreateFailed() {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("✅ Item Create Failed!");
+        embed.setDescription("Such an ID may be exist or there is something wrong.");
+        embed.setColor(new Color(0x57F287)); // Discord Green
+
+        embed.setFooter("Start your adventure with /help");
+        embed.setTimestamp(Instant.now());
 
         return embed.build();
     }

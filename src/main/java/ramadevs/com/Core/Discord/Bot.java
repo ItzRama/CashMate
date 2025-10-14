@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -47,7 +48,10 @@ public class Bot {
                 Commands.slash("register", "👤 Register for the bot."),
                 Commands.slash("balance", "💰 Check your balance."),
                 Commands.slash("deposit", "📥 Deposit your world locks."),
-                Commands.slash("setworld", "🔧 Set deposit world")
+
+                // Admin Only
+                Commands.slash("setworld", "🔧 Set deposit world"),
+                Commands.slash("additem", "➕ Add stock to the database.")
                 );
         commands.queue();
 

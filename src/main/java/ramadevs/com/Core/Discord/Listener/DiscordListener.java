@@ -11,8 +11,8 @@ import ramadevs.com.Core.Discord.Bot;
 import java.util.Arrays;
 
 import static ramadevs.com.Core.Discord.Embed.EmbedRegister.*;
-import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.checkBalance;
-import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.depositBalance;
+import static ramadevs.com.Core.Discord.Embed.TransactionEmbed.*;
+import static ramadevs.com.Core.Discord.Modal.CreateModalItem.createItem;
 import static ramadevs.com.Core.Discord.Modal.CreateModalRegister.createRegister;
 
 public class DiscordListener extends ListenerAdapter {
@@ -42,6 +42,9 @@ public class DiscordListener extends ListenerAdapter {
             case "deposit" -> {
                 StatsSchematic stats = bot.init.db.getStats();
                 event.replyEmbeds(depositBalance(stats)).setEphemeral(true).queue();
+            }
+            case "additem" -> {
+                event.replyModal(createItem()).queue();
             }
         }
     }
@@ -73,6 +76,18 @@ public class DiscordListener extends ListenerAdapter {
                     event.replyEmbeds(accountCreatedEmbed(event.getUser())).setEphemeral(true).queue();
                 } else {
                     event.replyEmbeds(accountExistEmbed(event.getUser())).setEphemeral(true).queue();
+                }
+            }
+            case "item_create_menu" -> {
+                String id = event.getValue("id").getAsString(),
+                        displayname = event.getValue("display_name").getAsString(),
+                        type = event.getValue("type").getAsString(),
+                        image = event.getValue("image").getAsString();
+                int price = Integer.parseInt(event.getValue("price").getAsString());
+                if (this.bot.init.db.addItem(id, displayname,type, price, image)) {
+                    event.replyEmbeds(itemCreated(bot.init.db.getItem(id))).setEphemeral(true).queue();
+                } else {
+                    event.replyEmbeds(itemCreateFailed()).setEphemeral(true).queue();
                 }
             }
         }

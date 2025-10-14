@@ -1,4 +1,5 @@
 Debug: true
+Prefix: '[CashMate]'
 Discord:
   Token: ''
   Donate-Log: '1421784471736422441'

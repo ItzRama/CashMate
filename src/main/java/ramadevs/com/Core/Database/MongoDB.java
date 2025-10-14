@@ -8,8 +8,11 @@ import com.mongodb.client.MongoDatabase;
 import net.dv8tion.jda.api.entities.User;
 import org.bson.Document;
 import ramadevs.com.Core.Database.Schematic.DataSchematic;
+import ramadevs.com.Core.Database.Schematic.ItemSchematic;
 import ramadevs.com.Core.Database.Schematic.StatsSchematic;
 import ramadevs.com.Core.Init;
+
+import java.util.ArrayList;
 
 public class MongoDB {
 
@@ -150,6 +153,32 @@ public class MongoDB {
             this.init.db.Data.updateOne(new Document("ID", schem.id), new Document("$set", new Document("Money", curMoney + amount)));
             return true;
         } else {
+            return false;
+        }
+    }
+
+    public boolean ItemExist(String id) {
+        return Stock.find(new Document("ID", id)).first() != null;
+    }
+
+    public ItemSchematic getItem(String id) {
+        if (ItemExist(id)) {
+            Document data = Stock.find(new Document("ID", id)).first();
+            return new ItemSchematic(data.getString("ID"), data.getString("Display_Name"), data.getString("Type"), data.getInteger("Price"), data.getInteger("Locks"), data.getString("Image"), (ArrayList<String>) data.get("Stock"));
+        }
+        return null;
+    }
+
+
+    public boolean addItem(String id, String display,String type, int price, String image) {
+        try {
+            if (ItemExist(id)) return false;
+
+            ArrayList<String> stock = new ArrayList<>();
+            this.init.db.Stock.insertOne(new Document("ID", id).append("Display_Name", display).append("Type", type).append("Price", price).append("Locks", 0).append("Image", image).append("Stock", stock));
+            return true;
+        } catch (MongoException e) {
+            e.printStackTrace();
             return false;
         }
     }
