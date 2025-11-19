@@ -17,7 +17,7 @@ public class Init {
         getConfig.initConfig();
         System.out.println("Starting.");
         db.initializeDatabase();
-        bot.StartBot("MTQyMTcxODQ0OTMzOTYyOTY2MA.GMgVnm.aS7bMh-tDUR-rwzeQFJdtWQST0RTDJgNUTyy_k");
+        bot.StartBot("Bot Token");
         if (getConfig.config.getBoolean("Growtopia.Support")) System.out.println("Growtopia Support Enabled");
     }
 
