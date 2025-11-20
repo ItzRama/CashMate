@@ -28,7 +28,7 @@ public class MongoDB {
 
     public void initializeDatabase() {
         try {
-            this.mongoClient = MongoClients.create("mongodb+srv://LuckyNetwork:armadiyanes196969@bolt.baf3wfn.mongodb.net/?retryWrites=true&w=majority"); // Need to be configurated free
+            this.mongoClient = MongoClients.create(""); // Need to be configurated free
             this.database = this.mongoClient.getDatabase("CashMate");
             this.Data = database.getCollection("User");
             this.Stats = database.getCollection("Stats");
